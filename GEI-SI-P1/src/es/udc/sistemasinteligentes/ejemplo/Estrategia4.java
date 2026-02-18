@@ -3,6 +3,9 @@ package es.udc.sistemasinteligentes.ejemplo;
 import es.udc.sistemasinteligentes.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class Estrategia4 implements EstrategiaBusqueda {
 
@@ -10,9 +13,10 @@ public class Estrategia4 implements EstrategiaBusqueda {
     }
 
     @Override
-    public Estado soluciona(ProblemaBusqueda p) throws Exception{
+    public Nodo[] soluciona(ProblemaBusqueda p) throws Exception{
         ArrayList<Estado> explorados = new ArrayList<Estado>();
         Estado estadoActual = p.getEstadoInicial();
+        Nodo nodoActual = new Nodo(estadoActual);
         explorados.add(estadoActual);
 
         int i = 1;
@@ -27,6 +31,7 @@ public class Estrategia4 implements EstrategiaBusqueda {
                 Estado sc = p.result(estadoActual, acc);
                 System.out.println((i++) + " - RESULT(" + estadoActual + ","+ acc + ")=" + sc);
                 if (!explorados.contains(sc)) {
+                    nodoActual = new Nodo(sc, nodoActual, acc);
                     estadoActual = sc;
                     System.out.println((i++) + " - " + sc + " NO explorado");
                     explorados.add(estadoActual);
@@ -40,6 +45,21 @@ public class Estrategia4 implements EstrategiaBusqueda {
             if (!modificado) throw new Exception("No se ha podido encontrar una solución");
         }
         System.out.println((i++) + " - FIN - " + estadoActual);
-        return estadoActual;
+        return recostruye_sol(nodoActual);
+    }
+
+
+    private Nodo[] recostruye_sol (Nodo nodoMeta){
+
+        List<Nodo> camino = new ArrayList();
+        Nodo nodoActual = nodoMeta;
+
+
+        while (nodoActual != null) {
+            camino.add(nodoActual);
+            nodoActual=nodoActual.getPadre();
+        }
+        Collections.reverse(camino);
+        return camino.toArray(new Nodo[0]);
     }
 }
